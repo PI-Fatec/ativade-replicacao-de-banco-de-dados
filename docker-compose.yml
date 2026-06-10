@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: aula-db-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aula-db
+    ports:
+      - "3306:3306"
+    volumes:
+      # Mapeia a pasta sql para que o script schema.sql rode automaticamente na primeira vez que o container subir
+      - ./sql:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password

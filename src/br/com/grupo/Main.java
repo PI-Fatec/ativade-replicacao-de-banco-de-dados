@@ -1,5 +1,6 @@
 package br.com.grupo;
 
+import br.com.grupo.api.ApiServer;
 import br.com.grupo.db.DatabaseManager;
 import br.com.grupo.repository.ClienteRepository;
 import br.com.grupo.repository.PedidoItemRepository;
@@ -22,6 +23,12 @@ public class Main {
 
             // Executar demonstração
             demoService.executarDemonstracao();
+            
+            // Iniciar Servidor REST
+            ApiServer apiServer = new ApiServer(produtoRepo, pedidoRepo);
+            apiServer.start(8080);
+            
+            System.out.println("Aplicação em execução! Pressione Ctrl+C para encerrar.");
             
         } catch (Exception e) {
             System.err.println("Erro crítico na execução: " + e.getMessage());
