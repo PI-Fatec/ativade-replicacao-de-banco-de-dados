@@ -21,12 +21,12 @@ public class Main {
 
             DemoService demoService = new DemoService(clienteRepo, produtoRepo, pedidoRepo, pedidoItemRepo);
 
-            // Executar demonstração
-            demoService.executarDemonstracao();
-            
             // Iniciar Servidor REST
             ApiServer apiServer = new ApiServer(produtoRepo, pedidoRepo);
             apiServer.start(8080);
+
+            // Executar demonstração
+            demoService.executarDemonstracao();
             
             System.out.println("Aplicação em execução! Pressione Ctrl+C para encerrar.");
             
