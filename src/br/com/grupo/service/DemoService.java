@@ -28,7 +28,7 @@ public class DemoService {
         for (int i = 1; i <= 3; i++) {
             String nome = "Cliente " + i + " " + UUID.randomUUID().toString().substring(0, 5);
             String email = "cliente" + i + "_" + UUID.randomUUID().toString().substring(0, 5) + "@email.com";
-            
+
             long id = clienteRepo.criarCliente(nome, email);
             System.out.println("[WRITE] Cliente criado: ID=" + id + " | Nome=" + nome + " | Email=" + email);
         }
@@ -43,28 +43,44 @@ public class DemoService {
             System.out.println("[WRITE] Produto criado: ID=" + id + " | Descrição=" + nomesProdutos[i] + " | Valor=" + valoresProdutos[i] + " | Estoque=" + estoquesProdutos[i]);
         }
 
-        // 3. Criação de Pedido
-        Cliente cliente = clienteRepo.buscarClienteAleatorio();
-        if (cliente != null) {
-            Random random = new Random();
-            int qtdProdutos = random.nextInt(3) + 1; // de 1 a 3 produtos
-            List<Produto> produtosSelecionados = produtoRepo.buscarProdutosAleatorios(qtdProdutos);
-            
-            if (!produtosSelecionados.isEmpty()) {
-                BigDecimal valorTotalPedido = BigDecimal.ZERO;
-                for (Produto p : produtosSelecionados) {
-                    valorTotalPedido = valorTotalPedido.add(p.getValor()); // Supondo qtd=1 por item para simplificar
+        // 3. Loop contínuo de criação de pedidos
+        int ciclo = 1;
+        while (true) {
+            System.out.println("\n========== CICLO " + ciclo + " ==========");
+
+            Cliente cliente = clienteRepo.buscarClienteAleatorio();
+            if (cliente == null) {
+                System.out.println("[WARN] Nenhum cliente encontrado. Aguardando...");
+            } else {
+                Random random = new Random();
+                int qtdProdutos = random.nextInt(3) + 1; // de 1 a 3 produtos
+                List<Produto> produtosSelecionados = produtoRepo.buscarProdutosAleatorios(qtdProdutos);
+
+                if (!produtosSelecionados.isEmpty()) {
+                    BigDecimal valorTotalPedido = BigDecimal.ZERO;
+                    for (Produto p : produtosSelecionados) {
+                        valorTotalPedido = valorTotalPedido.add(p.getValor());
+                    }
+
+                    long pedidoId = pedidoRepo.criarPedido(cliente.getId(), valorTotalPedido, "FINALIZADO");
+                    System.out.println("\n[WRITE] Pedido criado: ID=" + pedidoId + " | Cliente=" + cliente.getNome() + " | Valor Total=" + valorTotalPedido + " | Quantidade de Itens=" + produtosSelecionados.size());
+
+                    for (Produto p : produtosSelecionados) {
+                        pedidoItemRepo.criarPedidoItem((int) pedidoId, p.getId(), 1, p.getValor());
+                        System.out.println("[WRITE] PedidoItem criado para Pedido " + pedidoId + ": Produto=" + p.getDescricao());
+                    }
+
+                    demonstrarConsultasNaReplica((int) pedidoId, cliente.getId());
                 }
+            }
 
-                long pedidoId = pedidoRepo.criarPedido(cliente.getId(), valorTotalPedido, "FINALIZADO");
-                System.out.println("\n[WRITE] Pedido criado: ID=" + pedidoId + " | Cliente=" + cliente.getNome() + " | Valor Total=" + valorTotalPedido + " | Quantidade de Itens=" + produtosSelecionados.size());
-
-                for (Produto p : produtosSelecionados) {
-                    pedidoItemRepo.criarPedidoItem((int) pedidoId, p.getId(), 1, p.getValor());
-                    System.out.println("[WRITE] PedidoItem criado para Pedido " + pedidoId + ": Produto=" + p.getDescricao());
-                }
-
-                demonstrarConsultasNaReplica((int) pedidoId, cliente.getId());
+            ciclo++;
+            try {
+                Thread.sleep(3000); // aguarda 3 segundos entre ciclos
+            } catch (InterruptedException e) {
+                System.out.println("Demonstração interrompida.");
+                Thread.currentThread().interrupt();
+                break;
             }
         }
     }
