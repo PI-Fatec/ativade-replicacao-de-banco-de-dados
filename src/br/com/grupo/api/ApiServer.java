@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Locale;
 
 public class ApiServer {
 
@@ -62,11 +63,11 @@ public class ApiServer {
                     int id = Integer.parseInt(parts[2]);
                     Pedido p = pedidoRepo.buscarPedidoPorId(id);
                     if (p != null) {
-                        String json = String.format(
+                        String json = String.format(Locale.US,
                             "{\"id\": %d, \"cliente_id\": %d, \"cliente_nome\": \"%s\", \"valor_total\": %.2f, \"status\": \"%s\"}",
                             p.getId(), p.getClienteId(), p.getCliente().getNome(), p.getValorTotal(), p.getStatus()
                         );
-                        sendResponse(exchange, 200, json.replace(',', '.')); // simplificando formatação de ponto flutuante no JSON
+                        sendResponse(exchange, 200, json);
                     } else {
                         sendResponse(exchange, 404, "{\"error\": \"Pedido não encontrado\"}");
                     }
@@ -97,11 +98,11 @@ public class ApiServer {
                     StringBuilder json = new StringBuilder("[");
                     for (int i = 0; i < pedidos.size(); i++) {
                         Pedido p = pedidos.get(i);
-                        json.append(String.format("{\"id\": %d, \"valor_total\": %.2f, \"status\": \"%s\"}", p.getId(), p.getValorTotal(), p.getStatus()));
+                        json.append(String.format(Locale.US, "{\"id\": %d, \"valor_total\": %.2f, \"status\": \"%s\"}", p.getId(), p.getValorTotal(), p.getStatus()));
                         if (i < pedidos.size() - 1) json.append(", ");
                     }
                     json.append("]");
-                    sendResponse(exchange, 200, json.toString().replace(',', '.').replace("}. {", "}, {"));
+                    sendResponse(exchange, 200, json.toString());
                 } catch (NumberFormatException e) {
                     sendResponse(exchange, 400, "{\"error\": \"ID inválido\"}");
                 }
@@ -124,11 +125,11 @@ public class ApiServer {
             StringBuilder json = new StringBuilder("[");
             for (int i = 0; i < produtos.size(); i++) {
                 Produto p = produtos.get(i);
-                json.append(String.format("{\"id\": %d, \"descricao\": \"%s\", \"estoque\": %d, \"valor\": %.2f}", p.getId(), p.getDescricao(), p.getEstoque(), p.getValor()));
+                json.append(String.format(Locale.US, "{\"id\": %d, \"descricao\": \"%s\", \"estoque\": %d, \"valor\": %.2f}", p.getId(), p.getDescricao(), p.getEstoque(), p.getValor()));
                 if (i < produtos.size() - 1) json.append(", ");
             }
             json.append("]");
-            sendResponse(exchange, 200, json.toString().replace(',', '.').replace("}. {", "}, {"));
+            sendResponse(exchange, 200, json.toString());
         }
     }
 
@@ -142,11 +143,11 @@ public class ApiServer {
             }
 
             RelatorioVendas r = pedidoRepo.gerarRelatorio();
-            String json = String.format(
+            String json = String.format(Locale.US,
                 "{\"quantidade_total_pedidos\": %d, \"valor_medio_pedidos\": %.2f, \"valor_total_vendido\": %.2f}",
                 r.getQuantidadeTotalPedidos(), r.getValorMedioPedidos(), r.getValorTotalVendido()
             );
-            sendResponse(exchange, 200, json.replace(',', '.'));
+            sendResponse(exchange, 200, json);
         }
     }
 }
