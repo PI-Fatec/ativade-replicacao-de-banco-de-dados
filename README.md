@@ -2,4 +2,4 @@
 ## Integrantes do Grupo:
 - Jhonatan Dias
 - Inácio Santana
-- Vinicius de Paul
+- Vinicius de Paula
