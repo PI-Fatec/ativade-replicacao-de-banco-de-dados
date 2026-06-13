@@ -36,7 +36,7 @@ public class DemoService {
         // 2. Cadastro de Produtos
         String[] nomesProdutos = {"Notebook", "Mouse", "Monitor", "Teclado"};
         BigDecimal[] valoresProdutos = {new BigDecimal("3500.00"), new BigDecimal("150.00"), new BigDecimal("1200.00"), new BigDecimal("300.00")};
-        int[] estoquesProdutos = {10, 50, 15, 30};
+        int[] estoquesProdutos = {8, 50, 15, 30};
 
         for (int i = 0; i < nomesProdutos.length; i++) {
             long id = produtoRepo.criarProduto(nomesProdutos[i], "Eletrônicos", valoresProdutos[i], estoquesProdutos[i]);
@@ -76,7 +76,7 @@ public class DemoService {
 
             ciclo++;
             try {
-                Thread.sleep(3000); // aguarda 3 segundos entre ciclos
+                Thread.sleep(10); // aguarda 2 segundos entre ciclos
             } catch (InterruptedException e) {
                 System.out.println("Demonstração interrompida.");
                 Thread.currentThread().interrupt();
